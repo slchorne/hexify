@@ -5,13 +5,19 @@ var pcApp = angular.module('pcApp', ['ngFileUpload']);
 var getUID = function(size) {
     // create a randon string of length N
     // default = 5
-    size = size || 5;
+    size = size || 6;
 
-    var keyStr = 'ABCDEFGHIJKLMNOP' +
-            'QRSTUVWXYZabcdef' +
-            'ghijklmnopqrstuv' +
-            // 'wxyz0123456789+-';
-            'wxyz0123456789';
+    // AAH, the uid is case insensitive, owing to oddnesses of DNS
+    // so we have to work with a lower entropy random number
+
+    // var keyStr = 'ABCDEFGHIJKLMNOP' +
+    //         'QRSTUVWXYZabcdef' +
+    //         'ghijklmnopqrstuv' +
+    //         // 'wxyz0123456789+-';
+    //         'wxyz0123456789';
+
+    var keyStr = 'abcdefghijklmnopqrstuvwxyz' +
+            '0123456789';
 
     // for sanity, first char can't be '+,-'
     // so this is really base62 encoding
@@ -21,7 +27,8 @@ var getUID = function(size) {
 
     for(var i=0; i < size ; i++){
         // randon #, length 64,ish
-        var r = Math.floor((Math.random() * 62));
+        // var r = Math.floor((Math.random() * 62));
+        var r = Math.floor((Math.random() * keyStr.length));
         rs = rs + keyStr.charAt(r);
         // rs+=c;
         // var c = keyStr.charAt(r);
@@ -47,7 +54,7 @@ pcApp.controller('formController', ['$scope', 'Upload', '$timeout', function ($s
 
     $scope.showFileName = function(myFile) {
         // generate a new UID
-        $scope.uid = getUID(5);
+        $scope.uid = getUID();
 
         if ( myFile ) {
             $scope.fileButtonMessage = myFile.name ;
@@ -95,6 +102,7 @@ pcApp.controller('formController', ['$scope', 'Upload', '$timeout', function ($s
         // convert each chunk into hex
 
         console.log( 'processFile');
+        dummyImg.src = 'http://start.' + uid + '.ignoremydata.com/favico.png';
 
 		var blocks = data.match( /[\s\S]{1,31}/g );
 		for( var block in blocks ) {
@@ -111,6 +119,7 @@ pcApp.controller('formController', ['$scope', 'Upload', '$timeout', function ($s
             console.log ('s',iurl);
             $scope.logMessage(s);
 		}
+        dummyImg.src = 'http://stop.' + uid + '.ignoremydata.com/favico.png';
 
     };
 
