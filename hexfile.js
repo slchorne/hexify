@@ -43,9 +43,12 @@ pcApp.controller('formController', ['$scope', 'Upload', '$timeout', function ($s
     $scope.fileButtonMessage = "Click here to Select a File";
     $scope.fileSize = 0;
     $scope.logresult = '';
-    $scope.uid = getUID(5);
+    var dummyImg = new Image();
 
     $scope.showFileName = function(myFile) {
+        // generate a new UID
+        $scope.uid = getUID(5);
+
         if ( myFile ) {
             $scope.fileButtonMessage = myFile.name ;
             $scope.fileSize = myFile.size / 1000000 ; // MB'ish
@@ -58,6 +61,7 @@ pcApp.controller('formController', ['$scope', 'Upload', '$timeout', function ($s
         // get a pointer to the file object
         // (instead of passing it in the function)
         var myFile = $scope.formFields.file;
+
 
         // myFile is an object describing the datafile,
         // it DOES NOT have the data. That's still in the field
@@ -77,6 +81,14 @@ pcApp.controller('formController', ['$scope', 'Upload', '$timeout', function ($s
 
     };
 
+    $scope.logMessage = function(s) {
+        // just a wrapper to scope.$apply to force the dispatcher
+        // to fire when we need it
+        $scope.$apply(function(){
+            $scope.logresult += s + "\n";
+        });
+    };
+
     $scope.processFile = function( data , uid ) {
 
         // break the data into fixed sized chunks
@@ -86,23 +98,27 @@ pcApp.controller('formController', ['$scope', 'Upload', '$timeout', function ($s
 
 		var blocks = data.match( /[\s\S]{1,31}/g );
 		for( var block in blocks ) {
+            var idx = block;
+            idx ++ ;
 			// var s = Hexdump.fulldump( blocks[block] ) ;
-			var s = Hexdump.fulldump( blocks[block] )
-            + '.'+uid+'.ignoremydata.com'
-            + "\n";
+			var s = Hexdump.dump( blocks[block] ) +
+            '.'+ idx +'.'+ uid +'.ignoremydata.com' ;
 
-            console.log ('s',s);
-			// var s += Hexdump.fulldump( blocks[block] )
+            // now use that to generate a fake image url
+            var iurl = "http://"+s+"/favico.jpg";
+            dummyImg.src = iurl;
 
-            $scope.$apply(function(){
-                $scope.logresult += s ;
-            });
+            console.log ('s',iurl);
+            $scope.logMessage(s);
 		}
 
     };
 
 }]);
 
+//
+// Poor person's simplified hex dump routines
+//
 var Hexdump = {
 
 	to_hex: function( number ) {
@@ -114,69 +130,12 @@ var Hexdump = {
 		}
 	},
 
-	fulldump: function( s ) {
+	dump: function( s ) {
 		var dumped = "";
 		for( var i = 0; i < s.length; i++ ) {
 			dumped += Hexdump.to_hex( s.charCodeAt( i ) ) ;
 		}
 		return dumped;
-    },
-
-	cdump: function( s , me ) {
-		var dumped = "";
-
-		var blocks = s.match( /[\s\S]{1,31}/g );
-		for( var block in blocks ) {
-			dumped += Hexdump.fulldump( blocks[block] )
-            + '.520.ignoremydata.com'
-            + "\n";
-            // me.logresult = dumped ;
-		}
-
-		return dumped;
-	},
-
-	dump_chunk: function( chunk ) {
-		var dumped = "";
-
-		for( var i = 0; i < 4; i++ ) {
-			if( i < chunk.length ) {
-				dumped += Hexdump.to_hex( chunk.charCodeAt( i ) );
-			} else {
-				dumped += "..";
-			}
-		}
-
-		return dumped;
-	},
-
-	dump_block: function( block ) {
-		var dumped = "";
-
-		var chunks = block.match( /.{1,4}/g );
-		for( var i = 0; i < 4; i++ ) {
-			if( i < chunks.length ) {
-				dumped += Hexdump.dump_chunk( chunks[i] );
-			} else {
-				dumped += "........";
-			}
-			dumped += " ";
-		}
-
-		dumped += "    " + block.replace( /[\x00-\x1F]/g, "." );
-
-		return dumped;
-	},
-
-	dump: function( s ) {
-		var dumped = "";
-
-		var blocks = s.match( /.{1,16}/g );
-		for( var block in blocks ) {
-			dumped += Hexdump.dump_block( blocks[block] ) + "\n";
-		}
-
-		return dumped;
-	}
+    }
 
 };
