@@ -1,0 +1,16 @@
+.breadcrumb{
+    /*position:relative; */
+    margin-top: 10px;
+    border-radius: 0 !important;
+    height:40px;
+    width:100%;
+    background-image: -webkit-gradient(linear,50% 0%,50% 100%,color-stop(0%,#0092e0),color-stop(100%,#0073e0));
+    background-image: linear-gradient(#0092E0, #0073E0);
+    background-color:#0073E0;
+}
+
+.form-background {
+    background : #d0e4fa;
+    padding-top: 20px;
+    padding-bottom: 20px;
+}

@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html ng-app="pcApp">
+<head>
+    <!--
+  <base href="/">
+  <link rel="stylesheet" href="http://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css" />
+    -->
+  <!-- load CSS from bootstrap and fontawesome via CDN -->
+  <link rel="stylesheet" href="libs/bootstrap/css/bootstrap.min.css" />
+  <link rel="stylesheet" href="libs/font-awesome/css/font-awesome.css" />
+  <link rel="stylesheet" href="styles.css" />
+
+  <!-- load angular and angular route via CDN -->
+  <!--
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.25/angular.min.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.25/angular-route.js"></script>
+  -->
+  <script src="angular.js"></script>
+  <script src="ng-file-upload-all.js"></script>
+
+  <script src="hexfile.js"></script>
+
+</head>
+<body ng-controller="formController">
+
+ <!-- <a href="https://www.infoblox.com" target="_blank" style="margin-top:3px;"><img alt="Infoblox logo" src="https://6map.infoblox.com/images/logo.png" style="margin-left:20px;"></a> -->
+
+ <!-- Blue bar -->
+ <div class="breadcrumb">
+ </div>
+
+<div class="container center-block">
+
+  <div> <!--under container-->
+  <form name="userForm" >
+
+    <!--header message-->
+    <div class="row">
+      <div class="col-xs-8 col-xs-offset-2
+          col-sm-8 col-sm-offset-2
+          col-md-8 col-md-offset-2">
+            <h3>Hexify ({{uid}})</h3>
+      </div>
+    </div>
+
+    <hr/>
+
+    <!-- form components slightly offset from the left-->
+    <div class="row">
+      <div class="form-background
+          col-xs-8 col-xs-offset-1
+          col-sm-4 col-sm-offset-1
+          col-md-4 col-md-offset-1">
+
+        <div class="btn btn-primary btn-sm btn-block"
+            required
+            ngf-select="showFileName($file)"
+            ng-model="formFields.file" name="uploadFile" >
+            {{fileButtonMessage}}
+        </div>
+
+            <!--validation-->
+            <span class="text-danger" ng-show="userform.uploadfile.$invalid">
+                You must select a file</span>
+            <b class="text-danger" ng-show="fileSize > 1">
+                <br/>This file is too large. Files must be less than
+                1Mb</b>
+
+        <p/>
+        <div></div>
+
+        <!--
+        <button ng-disabled="!userForm.$valid"
+            Don't show the submit button until we are ready
+            -->
+        <button ng-show="userForm.$valid && fileSize < 1"
+          class="btn btn-success btn-lg btn-block"
+          ng-click="uploadPic()">Send It!
+        </button>
+
+        <span class="text-danger" ng-show="errorMsg">{{errorMsg}}</span>
+
+
+      </div><!--cols-->
+      <div class="col-sm-6">
+
+          <h4>What ? </h4>
+          <p>Upload a file and you're done</p>
+
+      </div>
+    </div><!--row-->
+
+    <!-- status message, wider -->
+    <p/>
+
+    <div class="row">
+
+      <!--file formatting message, put down here where the block
+        is wider -->
+        <pre>
+Output...
+{{logresult}}
+
+        </pre>
+
+    </div><!--row-->
+
+  </form>
+  </div> <!-- inner div to container-->
+
+</div>
+
+</body>
+</html>
