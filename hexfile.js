@@ -47,7 +47,7 @@ pcApp.controller('formController', ['$scope', 'Upload', '$timeout', function ($s
     // create a blank object to hold our form information
     // $scope will allow this to pass between controller and view
     $scope.formFields = {};
-    $scope.fileButtonMessage = "Click here to Select a File";
+    $scope.fileButtonMessage = "Click here to send a file";
     $scope.fileSize = 0;
     $scope.logresult = '';
     var dummyImg = new Image();
