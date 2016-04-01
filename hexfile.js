@@ -53,6 +53,30 @@ pcApp.controller('formController', ['$scope', 'Upload', '$timeout', function ($s
         }
     };
 
+    $scope.uploadPic = function() {
+
+        // get a pointer to the file object
+        // (instead of passing it in the function)
+        var myFile = $scope.formFields.file;
+
+        // myFile is an object describing the datafile,
+        // it DOES NOT have the data. That's still in the field
+        console.log('file:',myFile);
+        console.log('fields:',$scope.formFields);
+
+        // we're still using the ng-file uploader to handle the UI bits
+        // but the internal filereader() to get the raw data
+        // read in the file then process it line by line
+
+        var reader = new FileReader();
+        reader.onload = function(e) {
+            $scope.processFile(reader.result,$scope.uid);
+
+        };
+        reader.readAsBinaryString(myFile);
+
+    };
+
     $scope.processFile = function( data , uid ) {
 
         // break the data into fixed sized chunks
@@ -74,28 +98,6 @@ pcApp.controller('formController', ['$scope', 'Upload', '$timeout', function ($s
                 $scope.logresult += s ;
             });
 		}
-
-    };
-
-    $scope.uploadPic = function() {
-
-        // get a pointer to the file object
-        // (instead of passing it in the function)
-        var myFile = $scope.formFields.file;
-
-        // myFile is an object describing the datafile,
-        // it DOES NOT have the data. That's still in the field
-        console.log('file:',myFile);
-        console.log('fields:',$scope.formFields);
-
-        // read in the file then process it line by line
-
-        var reader = new FileReader();
-        reader.onload = function(e) {
-            $scope.processFile(reader.result,$scope.uid);
-
-        };
-        reader.readAsBinaryString(myFile);
 
     };
 
