@@ -148,7 +148,7 @@ pcApp.controller('formController', ['$scope', 'Upload', '$timeout','$interval',
         $interval(function(){
             var q = queries[qidx];
             // and force a query
-            dummyImg.src = iurl;
+            dummyImg.src = q;
             // $interval calls $digest, so no need to call 'logMessage()'
             // $scope.logMessage(q);
             console.log ('q',q);
