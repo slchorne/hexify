@@ -20,7 +20,7 @@ var getUID = function(size) {
             '0123456789';
 
     // for sanity, first char can't be '+,-'
-    // so this is really base62 encoding
+    // so this is really base32 encoding
 
     // generate N randon characters
     var rs = "";
@@ -47,9 +47,10 @@ pcApp.controller('formController', ['$scope', 'Upload', '$timeout', function ($s
     // create a blank object to hold our form information
     // $scope will allow this to pass between controller and view
     $scope.formFields = {};
-    $scope.fileButtonMessage = "Click here to send a file";
+    $scope.fileButtonMessage = "Click here to load a file";
     $scope.fileSize = 0;
     $scope.logresult = '';
+
     var dummyImg = new Image();
 
     $scope.showFileName = function(myFile) {
@@ -64,6 +65,9 @@ pcApp.controller('formController', ['$scope', 'Upload', '$timeout', function ($s
     };
 
     $scope.uploadPic = function() {
+
+        // save the Filetype in the UID or somewhere for the url
+        // on the CGI side
 
         // get a pointer to the file object
         // (instead of passing it in the function)
@@ -96,7 +100,10 @@ pcApp.controller('formController', ['$scope', 'Upload', '$timeout', function ($s
         });
     };
 
+
     $scope.processFile = function( data , uid ) {
+
+        // ?filename=hello.txt&uid=s5tbk4&showdata=on
 
         // break the data into fixed sized chunks
         // convert each chunk into hex
@@ -124,6 +131,8 @@ pcApp.controller('formController', ['$scope', 'Upload', '$timeout', function ($s
             console.log ('s',iurl);
             $scope.logMessage(s);
 		}
+
+        // add a wait here. and a wait between sending each url
         dummyImg.src = 'http://stop.' + uid + '.ignoremydata.com/favico.png';
 
     };

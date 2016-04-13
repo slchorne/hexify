@@ -39,7 +39,7 @@
       <div class="col-xs-8 col-xs-offset-2
           col-sm-8 col-sm-offset-2
           col-md-8 col-md-offset-2">
-            <h3>Hexify</h3>
+            <h3>Hexify : (you know what this does)</h3>
       </div>
     </div>
 
@@ -84,12 +84,15 @@
       </div><!--cols-->
       <div class="col-sm-6">
 
+          <p>Upload a file, and this will generate a UID and a link to
+              retrieve the file from the server.</p>
+          <span ng-show="uid">
           <h4>Your UID is : {{uid}}</h4>
-          <p>Upload a file and you're mostly done</p>
-          <p>Then got to [<a href="http://www.ignoremydata.com/cgi-bin/decode.cgi?filename={{formFields.file.name}}&uid={{uid}}">
-              http://www.ignoremydata.com/cgi-bin/decode.cgi?filename={{formFields.file.name}}&uid={{uid}}</a> ]
-              <br/>to see the result :
+          <p>Your link is:
+              <br/><a href="http://www.ignoremydata.com/cgi-bin/decode.cgi?filename={{formFields.file.name}}&uid={{uid}}">
+              http://www.ignoremydata.com/cgi-bin/decode.cgi?filename={{formFields.file.name}}&uid={{uid}}</a>
           </p>
+          </span>
 
       </div>
     </div><!--row-->
