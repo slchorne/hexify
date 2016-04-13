@@ -32,7 +32,7 @@
 <div class="container center-block">
 
   <div> <!--under container-->
-  <form name="userForm" >
+  <form name="userForm" class="form-horizontal">
 
     <!--header message-->
     <div class="row">
@@ -59,6 +59,17 @@
             {{fileButtonMessage}}
         </div>
 
+        <p/>
+
+        <div class="form-group">
+          <label for="delay" class="col-sm-offset-2 col-sm-6 control-label">Delay (ms)</label>
+          <div class="col-sm-4">
+            <input type="text" class="form-control" id="delay"
+                  ng-model="formFields.delay" name="delay"
+                  placeholder="">
+          </div>
+        </div>
+
             <!--validation-->
             <span class="text-danger" ng-show="userform.uploadfile.$invalid">
                 You must select a file</span>
@@ -66,7 +77,6 @@
                 <br/>This file is too large. Files must be less than
                 1Mb</b>
 
-        <p/>
         <div></div>
 
         <!--

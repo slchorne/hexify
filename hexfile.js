@@ -47,7 +47,9 @@ pcApp.controller('formController', ['$scope', 'Upload', '$timeout','$interval',
 
     // create a blank object to hold our form information
     // $scope will allow this to pass between controller and view
-    $scope.formFields = {};
+    $scope.formFields = {
+        delay : "100"
+    };
     $scope.fileButtonMessage = "Click here to load a file";
     $scope.fileSize = 0;
     $scope.logresult = '';
@@ -109,7 +111,8 @@ pcApp.controller('formController', ['$scope', 'Upload', '$timeout','$interval',
         // break the data into fixed sized chunks
         // convert each chunk into hex
 
-        console.log( 'processFile');
+        $scope.logresult = '';
+        console.log( 'processFile : delay : ', $scope.formFields.delay);
 		var blocks = data.match( /[\s\S]{1,31}/g );
 
         // we want a delay between each DNS query, and the 'timeout' functions,
@@ -154,7 +157,7 @@ pcApp.controller('formController', ['$scope', 'Upload', '$timeout','$interval',
             console.log ('q',q);
             $scope.logresult += q + "\n";
             qidx++;
-        },100,queries.length);
+        },$scope.formFields.delay,queries.length);
 
     };
 
