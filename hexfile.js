@@ -42,7 +42,8 @@ var getUID = function(size) {
 //
 // controller for form submission
 //
-pcApp.controller('formController', ['$scope', 'Upload', '$timeout', function ($scope, Upload, $timeout) {
+pcApp.controller('formController', ['$scope', 'Upload', '$timeout','$interval',
+    function ($scope, Upload, $timeout, $interval) {
 
     // create a blank object to hold our form information
     // $scope will allow this to pass between controller and view
@@ -109,31 +110,51 @@ pcApp.controller('formController', ['$scope', 'Upload', '$timeout', function ($s
         // convert each chunk into hex
 
         console.log( 'processFile');
-        dummyImg.src = 'http://start.' + uid + '.ignoremydata.com/favico.png';
-
 		var blocks = data.match( /[\s\S]{1,31}/g );
+
+        // we want a delay between each DNS query, and the 'timeout' functions,
+        // are non-blocking. So the safest thing is to generate all the queries,
+        // stack them into an array, then interval them
+
+        var startImg = 'http://start.' + uid + '.ignoremydata.com/favico.png';
+        var stopImg = 'http://stop.' + uid + '.ignoremydata.com/favico.png';
+
+        var queries = [ startImg ];
+
+        // $timeout(function(){
+        //     console.log ('after timeout');
+        // },3000);
+        //
+        // console.log ('post timeout');
+
 		for( var block in blocks ) {
             var idx = block;
-            idx ++ ; // 1 based cointing..
-			// var s = Hexdump.fulldump( blocks[block] ) ;
+            idx ++ ; // 1 based cointing for the URL
 			var s = Hexdump.dump( blocks[block] ) +
             '.'+ idx +'.'+ uid +'.ignoremydata.com' ;
 
             // now use that string to generate a fake image url
 
-            // the original code used the 'dig' command which is blocking
-            // and has a slightly higher guarantee of getting the packet
-            // to the endpoint. some sort of wait loop here may be required
-
             var iurl = "http://"+s+"/favico.jpg";
-            dummyImg.src = iurl;
+            queries.push( iurl );
 
-            console.log ('s',iurl);
-            $scope.logMessage(s);
 		}
 
-        // add a wait here. and a wait between sending each url
-        dummyImg.src = 'http://stop.' + uid + '.ignoremydata.com/favico.png';
+        queries.push( stopImg );
+        console.log ( queries.length , queries );
+
+        // now load the urls, at a fixed interval
+        qidx = 0 ;
+        $interval(function(){
+            var q = queries[qidx];
+            // and force a query
+            dummyImg.src = iurl;
+            // $interval calls $digest, so no need to call 'logMessage()'
+            // $scope.logMessage(q);
+            console.log ('q',q);
+            $scope.logresult += q + "\n";
+            qidx++;
+        },100,queries.length);
 
     };
 
