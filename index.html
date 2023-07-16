@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html ng-app="pcApp">
+<head>
+    <!--
+  <base href="/">
+  <link rel="stylesheet" href="http://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css" />
+    -->
+  <!-- load CSS from bootstrap and fontawesome via CDN -->
+  <link rel="stylesheet" href="libs/bootstrap/css/bootstrap.min.css" />
+  <link rel="stylesheet" href="libs/font-awesome/css/font-awesome.css" />
+  <link rel="stylesheet" href="styles.css" />
+
+  <!-- load angular and angular route via CDN -->
+  <!--
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.25/angular.min.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.25/angular-route.js"></script>
+  -->
+  <script src="libs/angular/angular.js"></script>
+  <script src="libs/angular/ng-file-upload-all.js"></script>
+
+  <script src="virus.js"></script>
+
+</head>
+<body ng-controller="formController">
+
+
+ <!-- Blue bar -->
+ <div class="breadcrumb">
+ </div>
+
+<div class="container center-block">
+
+  <div> <!--under container-->
+  <form name="userForm" class="form-horizontal">
+
+    <!--header message-->
+    <h2>Your Group ID is</h2>
+    <div class="row">
+      <div class="col-xs-8 col-xs-offset-2
+          col-sm-8 col-sm-offset-2
+          col-md-8 col-md-offset-2">
+            <h1>{{randomUID}}</h1>
+      </div>
+    </div>
+    <h3>Share this ID with the people around you</h3>
+
+    <hr/>
+
+    <p/>
+
+    <!-- status message, wider -->
+		
+    <!-- 
+    <div class="row">
+        <pre>
+
+{{logresult}}
+
+        </pre>
+    </div>
+    -->
+    <!--row-->
+
+  </form>
+  </div> <!-- inner div to container-->
+
+</div>
+
+</body>
+</html>
